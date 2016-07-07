@@ -11,8 +11,8 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AtpResponse {
 
-    public String status;
-    public List<AtpItemResponse> items;
+    //public String status;
+    public List<AtpItemResponse> item;
     public AtpResponse(){
 
     }

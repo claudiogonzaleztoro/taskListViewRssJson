@@ -7,7 +7,10 @@ import android.os.Looper;
 import android.view.View;
 import android.widget.ListView;
 
-import com.fasterxml.jackson.core.io.UTF8Writer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.json.JSONObject;
+import org.json.XML;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -15,12 +18,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.Map;
 
 
 public class MainActivity extends Activity {
 
-    private String SERVICE_RSS_2_JSON = "http://rss2json.com/api.json";
-    private String RSS_URL = "http://www.atpworldtour.com/en/media/rss-feed/xml-feed";
+    private String RSS_URL = "http://news.yahoo.com/rss/entertainment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,20 +38,17 @@ public class MainActivity extends Activity {
         });
     }
 
-//    private WeatherResponse mResponse;
-
     private void doInBackground(){
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                backToMainThreadwithResponse(fetchWeatherReport());
-//                mResponse = fetchWeatherReport();
+                backToMainThreadWithResponse(fetchAtpTennisReport());
             }
         });
         t.start();
     }
 
-    private void backToMainThreadwithResponse(final AtpResponse response){
+    private void backToMainThreadWithResponse(final AtpResponse response){
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -58,14 +58,13 @@ public class MainActivity extends Activity {
 
     }
 
-    private AtpResponse fetchWeatherReport() {
+    private AtpResponse fetchAtpTennisReport() {
         try {
 
-            /*Atp Tennis RSS*/
-
-            URL url = new URL(SERVICE_RSS_2_JSON + "?rss_url="+ URLEncoder.encode(RSS_URL, "UTF-8"));
+            URL url = new URL(RSS_URL);
             URLConnection urlConnection = url.openConnection();
             HttpURLConnection connection = null;
+
             if (urlConnection instanceof HttpURLConnection) {
                 connection = (HttpURLConnection) urlConnection;
             } else {
@@ -80,10 +79,10 @@ public class MainActivity extends Activity {
             while ((current = in.readLine()) != null) {
                 urlString += current;
             }
-            System.out.println(urlString);
-            //convert string to json using jackson
 
-            return (AtpResponse)Utils.fromJson(urlString,AtpResponse.class);
+            JSONObject xmlJSONObj = XML.toJSONObject(urlString);
+            xmlJSONObj = xmlJSONObj.getJSONObject("rss").getJSONObject("channel");
+            return (AtpResponse)Utils.fromJson(xmlJSONObj.toString(),AtpResponse.class);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,7 +96,7 @@ public class MainActivity extends Activity {
         MyListViewAdapter adapter = new MyListViewAdapter(this);
 
         listview.setAdapter(adapter);
-        adapter.setData(response.items);
+        adapter.setData(response.item);
     }
 
 }
