@@ -18,13 +18,13 @@ import java.util.List;
 public class MyListViewAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
-    private List<DayWeatherResponse> mDataList = new ArrayList<DayWeatherResponse>();
+    private List<AtpItemResponse> mDataList = new ArrayList<AtpItemResponse>();
 
     public MyListViewAdapter(Context cxt){
         mInflater = LayoutInflater.from(cxt);
     }
 
-    public void setData(List<DayWeatherResponse> dataList){
+    public void setData(List<AtpItemResponse> dataList){
         this.mDataList = dataList;
     }
 
@@ -45,14 +45,14 @@ public class MyListViewAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        DayWeatherResponse data = mDataList.get(position);
+        AtpItemResponse data = mDataList.get(position);
 
         if(convertView == null){
             convertView = mInflater.inflate(R.layout.listitem,null);
             System.out.println("item created for "+position);
         }
 
-        ((TextView)convertView.findViewById(R.id.textView2)).setText(data.dt_txt);
+        ((TextView)convertView.findViewById(R.id.textView2)).setText(data.title);
 
         return convertView;
 

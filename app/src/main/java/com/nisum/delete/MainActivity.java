@@ -1,43 +1,26 @@
 package com.nisum.delete;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.database.DataSetObserver;
-import android.graphics.Color;
-import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.StrictMode;
-import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.io.UTF8Writer;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.List;
+import java.net.URLEncoder;
+
 
 public class MainActivity extends Activity {
+
+    private String SERVICE_RSS_2_JSON = "http://rss2json.com/api.json";
+    private String RSS_URL = "http://www.atpworldtour.com/en/media/rss-feed/xml-feed";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +48,7 @@ public class MainActivity extends Activity {
         t.start();
     }
 
-    private void backToMainThreadwithResponse(final WeatherResponse response){
+    private void backToMainThreadwithResponse(final AtpResponse response){
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -75,9 +58,12 @@ public class MainActivity extends Activity {
 
     }
 
-    private WeatherResponse fetchWeatherReport() {
+    private AtpResponse fetchWeatherReport() {
         try {
-            URL url = new URL("http://api.openweathermap.org/data/2.5/forecast?q=London,us&mode=json&appid=01e40d5aac467cb45aa0d28f85d252d6");
+
+            /*Atp Tennis RSS*/
+
+            URL url = new URL(SERVICE_RSS_2_JSON + "?rss_url="+ URLEncoder.encode(RSS_URL, "UTF-8"));
             URLConnection urlConnection = url.openConnection();
             HttpURLConnection connection = null;
             if (urlConnection instanceof HttpURLConnection) {
@@ -97,7 +83,7 @@ public class MainActivity extends Activity {
             System.out.println(urlString);
             //convert string to json using jackson
 
-            return (WeatherResponse)Utils.fromJson(urlString,WeatherResponse.class);
+            return (AtpResponse)Utils.fromJson(urlString,AtpResponse.class);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,13 +91,13 @@ public class MainActivity extends Activity {
         return null;
     }
 
-    private void updateListView(WeatherResponse response){
+    private void updateListView(AtpResponse response){
         // draw the items
         ListView listview = (ListView)findViewById(R.id.listView);
         MyListViewAdapter adapter = new MyListViewAdapter(this);
 
         listview.setAdapter(adapter);
-        adapter.setData(response.list);
+        adapter.setData(response.items);
     }
 
 }
