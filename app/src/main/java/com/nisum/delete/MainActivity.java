@@ -7,8 +7,6 @@ import android.os.Looper;
 import android.view.View;
 import android.widget.ListView;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.json.JSONObject;
 import org.json.XML;
 
@@ -17,8 +15,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.util.Map;
 
 
 public class MainActivity extends Activity {
